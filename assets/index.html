@@ -1,197 +1,1360 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Porimap — Price Calculator</title>
-<style>
-  :root{
-    --bg:#FAFAF8; --card:#FFFFFF; --ink:#161816; --muted:#8A918D;
-    --line:#E2E4DE; --accent:#0f6a54; --field:#EDEFEA;
-  }
-  .dark{
-    --bg:#0B0D0C; --card:#111413; --ink:#EDEEEC; --muted:#7C857F;
-    --line:#1E2321; --accent:#2BA884; --field:#151918;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{-webkit-text-size-adjust:100%}
-  body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter",system-ui,sans-serif;
-    background:var(--bg);color:var(--ink);min-height:100vh;
-    -webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
-  header{border-bottom:1px solid var(--line)}
-  .bar{max-width:520px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
-  .brand{display:flex;align-items:center;gap:12px;min-width:0}
-  .mark{flex-shrink:0;width:8px;height:8px;border-radius:50%;background:var(--accent)}
-  .brand b{font-size:17px;font-weight:600;letter-spacing:-.02em}
-  .brand small{display:block;font-size:12px;font-weight:400;color:var(--muted);letter-spacing:.02em}
-  #themeBtn{flex-shrink:0;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);
-    background:transparent;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center}
-  #themeBtn:active{transform:scale(.94)}
-  main{max-width:520px;margin:0 auto;padding:32px 24px 56px;display:grid;gap:36px}
-  main > *{min-width:0}
-  .eyebrow{font-size:11px;font-weight:600;letter-spacing:.14em;color:var(--muted);margin-bottom:14px}
-  .field{min-width:0;background:var(--field);border:1px solid var(--line);border-radius:16px;
-    padding:6px 18px;display:flex;align-items:baseline;gap:10px;transition:border-color .2s}
-  .field:focus-within{border-color:var(--accent);background:var(--card)}
-  .field .unit{font-size:13px;color:var(--muted);flex-shrink:0}
-  input{flex:1;min-width:0;max-width:100%;border:none;background:transparent;color:var(--ink);
-    font-size:30px;font-weight:300;letter-spacing:-.02em;padding:12px 0;outline:none;font-variant-numeric:tabular-nums}
-  input::placeholder{color:var(--muted);opacity:.55}
-  input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-  input[type=number]{-moz-appearance:textfield;appearance:textfield}
-  .gap{height:18px}
-  #calcBtn{width:100%;margin-top:26px;padding:17px;border:none;border-radius:16px;background:var(--ink);color:var(--bg);
-    font-size:16px;font-weight:600;letter-spacing:.01em;cursor:pointer;transition:opacity .2s,transform .1s}
-  #calcBtn:active{transform:scale(.985);opacity:.88}
-  #result{display:none;padding-top:30px;margin-top:30px;border-top:1px solid var(--line)}
-  #result.show{display:block;animation:rise .35s cubic-bezier(.2,.7,.3,1)}
-  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-  #priceBig{font-size:clamp(44px,14vw,64px);font-weight:200;letter-spacing:-.04em;
-    font-variant-numeric:tabular-nums;overflow-wrap:anywhere;line-height:1.05}
-  #priceBig small{font-size:.5em;font-weight:300;color:var(--muted)}
-  #breakdown{margin-top:10px;font-size:13.5px;color:var(--muted);line-height:1.6}
-  #formula{margin-top:16px;font-size:12.5px;color:var(--muted);overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
-  .rowBtns{display:flex;gap:0;margin-top:20px;border-top:1px solid var(--line)}
-  .ghost{flex:1;padding:14px 0;border:none;border-bottom:1px solid var(--line);background:transparent;
-    color:var(--ink);font-size:14px;font-weight:500;cursor:pointer}
-  .ghost + .ghost{border-left:1px solid var(--line)}
-  .ghost:active{opacity:.55}
-  .hist-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px}
-  .hist-head h2{font-size:11px;font-weight:600;letter-spacing:.14em;color:var(--muted)}
-  #histCount{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
-  #hist{list-style:none}
-  #hist li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;
-    padding:13px 2px;border-bottom:1px solid var(--line);font-size:14.5px;min-width:0}
-  #hist li span{color:var(--muted);font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
-  #hist li b{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-  .empty{color:var(--muted);font-size:14px;padding:16px 2px;border-bottom:1px solid var(--line)}
-  footer{text-align:center;font-size:11.5px;letter-spacing:.08em;color:var(--muted);padding-bottom:8px}
-  #toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);max-width:90vw;text-align:center;
-    background:var(--ink);color:var(--bg);padding:12px 24px;border-radius:99px;font-size:13.5px;font-weight:500;
-    display:none;z-index:50;box-shadow:0 8px 30px rgba(0,0,0,.18)}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Woody Block Puzzle</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap');
+        
+        * {
+            font-family: 'Fredoka', 'Nunito', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        /* --- THEMES & STYLING --- */
+        body {
+            touch-action: none;
+            transition: background 0.5s ease;
+        }
+
+        /* 1. WOOD THEME (Default) */
+        body.theme-wood {
+            background: #2c1810 linear-gradient(180deg, #3d2317 0%, #23120b 100%);
+            --panel-bg: #4a2e1b;
+            --panel-border: #6d4428;
+            --grid-bg: #1c0e07;
+            --cell-empty: #2d190e;
+            --cell-border: #3d2214;
+            --accent-gold: #f59e0b;
+        }
+
+        /* 2. GEM JEWEL THEME */
+        body.theme-gem {
+            background: #0f172a linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%);
+            --panel-bg: #1e293b;
+            --panel-border: #334155;
+            --grid-bg: #090d16;
+            --cell-empty: #131c2e;
+            --cell-border: #1e293b;
+            --accent-gold: #fbbf24;
+        }
+
+        /* 3. TOY PASTEL THEME */
+        body.theme-toy {
+            background: #f0fdf4 linear-gradient(180deg, #fef3c7 0%, #dbeafe 100%);
+            --panel-bg: #ffffff;
+            --panel-border: #fcd34d;
+            --grid-bg: #f3f4f6;
+            --cell-empty: #e5e7eb;
+            --cell-border: #d1d5db;
+            --accent-gold: #f59e0b;
+        }
+
+        /* 4. BLOCK BLAST PURPLE THEME (New) */
+        body.theme-blast {
+            background: #7e22ce linear-gradient(180deg, #a855f7 0%, #6b21a8 100%);
+            --panel-bg: #1e1b4b;
+            --panel-border: #4338ca;
+            --grid-bg: #111827;
+            --cell-empty: #1f2937;
+            --cell-border: #374151;
+            --accent-gold: #facc15;
+        }
+
+        /* Tactile Wood Button Shadows & Bevels */
+        .btn-wood {
+            background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
+            box-shadow: 0 6px 0 #92400e, 0 10px 15px rgba(0,0,0,0.4);
+            border: 2px solid #fef08a;
+            transition: all 0.1s ease;
+        }
+        .btn-wood:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #92400e, 0 4px 6px rgba(0,0,0,0.4);
+        }
+
+        .btn-wood-secondary {
+            background: linear-gradient(180deg, #8b5cf6 0%, #6d28d9 100%);
+            box-shadow: 0 5px 0 #4c1d95, 0 8px 12px rgba(0,0,0,0.3);
+            border: 2px solid #ddd6fe;
+        }
+        .btn-wood-secondary:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #4c1d95;
+        }
+
+        .btn-wood-icon {
+            background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%);
+            box-shadow: 0 4px 0 #1e40af, 0 6px 10px rgba(0,0,0,0.3);
+            border: 2px solid #bfdbfe;
+        }
+        .btn-wood-icon:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #1e40af;
+        }
+
+        .wood-card {
+            background: var(--panel-bg);
+            border: 3px solid var(--panel-border);
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.15), 0 12px 24px rgba(0,0,0,0.5);
+        }
+
+        /* Grid Cell Styling */
+        .board-cell {
+            background-color: var(--cell-empty);
+            border: 1px solid var(--cell-border);
+            transition: background-color 0.12s ease, transform 0.1s ease, box-shadow 0.12s ease;
+        }
+
+        .board-cell.preview-valid {
+            background-color: rgba(250, 204, 21, 0.45) !important;
+            box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.8);
+            transform: scale(0.95);
+        }
+
+        .board-cell.preview-invalid {
+            background-color: rgba(239, 68, 68, 0.45) !important;
+            box-shadow: inset 0 0 8px rgba(239, 68, 68, 0.8);
+        }
+
+        /* Tactile Block Styles */
+        .theme-wood .block-oak { background: linear-gradient(135deg, #d97706, #b45309); border: 2px solid #fef08a; box-shadow: inset 0 2px 3px rgba(255,255,255,0.5), 0 3px 5px rgba(0,0,0,0.3); }
+        .theme-wood .block-pine { background: linear-gradient(135deg, #f59e0b, #d97706); border: 2px solid #fef3c7; box-shadow: inset 0 2px 3px rgba(255,255,255,0.5), 0 3px 5px rgba(0,0,0,0.3); }
+        .theme-wood .block-mahogany { background: linear-gradient(135deg, #dc2626, #991b1b); border: 2px solid #fca5a5; box-shadow: inset 0 2px 3px rgba(255,255,255,0.5), 0 3px 5px rgba(0,0,0,0.3); }
+        .theme-wood .block-walnut { background: linear-gradient(135deg, #78350f, #451a03); border: 2px solid #fde68a; box-shadow: inset 0 2px 3px rgba(255,255,255,0.3), 0 3px 5px rgba(0,0,0,0.3); }
+        .theme-wood .block-birch { background: linear-gradient(135deg, #fbbf24, #b45309); border: 2px solid #fff; box-shadow: inset 0 2px 3px rgba(255,255,255,0.5), 0 3px 5px rgba(0,0,0,0.3); }
+
+        .theme-blast .block-oak { background: linear-gradient(135deg, #facc15, #eab308); border: 2px solid #fef08a; box-shadow: inset 0 2px 4px #fff, 0 0 10px rgba(250, 204, 21, 0.6); }
+        .theme-blast .block-pine { background: linear-gradient(135deg, #3b82f6, #1d4ed8); border: 2px solid #bfdbfe; box-shadow: inset 0 2px 4px #fff, 0 0 10px rgba(59, 130, 246, 0.6); }
+        .theme-blast .block-mahogany { background: linear-gradient(135deg, #ef4444, #b91c1c); border: 2px solid #fca5a5; box-shadow: inset 0 2px 4px #fff, 0 0 10px rgba(239, 68, 68, 0.6); }
+        .theme-blast .block-walnut { background: linear-gradient(135deg, #a855f7, #7e22ce); border: 2px solid #f0abfc; box-shadow: inset 0 2px 4px #fff, 0 0 10px rgba(168, 85, 247, 0.6); }
+        .theme-blast .block-birch { background: linear-gradient(135deg, #22c55e, #15803d); border: 2px solid #bbf7d0; box-shadow: inset 0 2px 4px #fff, 0 0 10px rgba(34, 197, 94, 0.6); }
+
+        .theme-gem .block-oak { background: linear-gradient(135deg, #38bdf8, #0284c7); border: 2px solid #bae6fd; box-shadow: inset 0 2px 3px #fff, 0 0 8px rgba(56,189,248,0.5); }
+        .theme-gem .block-pine { background: linear-gradient(135deg, #a855f7, #7e22ce); border: 2px solid #f0abfc; box-shadow: inset 0 2px 3px #fff, 0 0 8px rgba(168,85,247,0.5); }
+        .theme-gem .block-mahogany { background: linear-gradient(135deg, #f43f5e, #be123c); border: 2px solid #fecdd3; box-shadow: inset 0 2px 3px #fff, 0 0 8px rgba(244,63,94,0.5); }
+        .theme-gem .block-walnut { background: linear-gradient(135deg, #10b981, #047857); border: 2px solid #a7f3d0; box-shadow: inset 0 2px 3px #fff, 0 0 8px rgba(16,185,129,0.5); }
+        .theme-gem .block-birch { background: linear-gradient(135deg, #fbbf24, #d97706); border: 2px solid #fef08a; box-shadow: inset 0 2px 3px #fff, 0 0 8px rgba(251,191,36,0.5); }
+
+        .theme-toy .block-oak { background: linear-gradient(135deg, #f472b6, #db2777); border: 2px solid #fbcfe8; }
+        .theme-toy .block-pine { background: linear-gradient(135deg, #60a5fa, #2563eb); border: 2px solid #bfdbfe; }
+        .theme-toy .block-mahogany { background: linear-gradient(135deg, #4ade80, #16a34a); border: 2px solid #bbf7d0; }
+        .theme-toy .block-walnut { background: linear-gradient(135deg, #facc15, #ca8a04); border: 2px solid #fef08a; }
+        .theme-toy .block-birch { background: linear-gradient(135deg, #c084fc, #9333ea); border: 2px solid #e9d5ff; }
+
+        /* Block Placement Bounce */
+        @keyframes squishBounce {
+            0% { transform: scale(1.18); }
+            50% { transform: scale(0.92); }
+            100% { transform: scale(1); }
+        }
+        .placed-bounce {
+            animation: squishBounce 0.22s ease-out;
+        }
+
+        /* Line Clear Flash */
+        @keyframes lineClearAnim {
+            0% { transform: scale(1); filter: brightness(2); }
+            50% { transform: scale(1.15) rotate(3deg); filter: brightness(3); }
+            100% { transform: scale(0); opacity: 0; }
+        }
+        .clearing {
+            animation: lineClearAnim 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            z-index: 20;
+        }
+
+        /* Floating score popup */
+        @keyframes floatUpScore {
+            0% { opacity: 1; transform: translateY(0) scale(0.8); }
+            50% { transform: translateY(-25px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-50px) scale(1); }
+        }
+        .floating-score {
+            position: absolute;
+            animation: floatUpScore 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            pointer-events: none;
+            font-weight: 900;
+            z-index: 60;
+        }
+
+        /* Title pulse */
+        @keyframes titleFloat {
+            0%, 100% { transform: translateY(0) rotate(-1deg); }
+            50% { transform: translateY(-6px) rotate(1deg); }
+        }
+        .animated-title {
+            animation: titleFloat 3s ease-in-out infinite;
+        }
+
+        #drag-ghost {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        /* Canvas Overlay for Particle Splinters */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 100;
+        }
+    </style>
 </head>
-<body>
-<header>
-  <div class="bar">
-    <div class="brand"><div class="mark"></div><div><b>Porimap</b><small>পরিমাপ · measure the price</small></div></div>
-    <button id="themeBtn" title="Toggle theme" aria-label="Toggle theme"></button>
-  </div>
-</header>
+<body class="theme-wood min-h-screen flex flex-col items-center justify-between p-3 md:p-5 text-white overflow-hidden select-none">
 
-<main>
-  <section>
-    <p class="eyebrow">RATE — PER KILOGRAM</p>
-    <div class="field"><span class="unit">৳</span><input id="rate" type="number" min="0" step="any" inputmode="decimal" placeholder="0" /></div>
-    <div class="gap"></div>
-    <p class="eyebrow">WEIGHT — GRAMS</p>
-    <div class="field"><input id="weight" type="number" min="0" step="any" inputmode="decimal" placeholder="0" /><span class="unit">g</span></div>
-    <button id="calcBtn">Calculate</button>
+    <!-- Particle Overlay Canvas -->
+    <canvas id="particle-canvas"></canvas>
 
-    <div id="result">
-      <p class="eyebrow">TOTAL</p>
-      <p id="priceBig"></p>
-      <p id="breakdown"></p>
-      <p id="formula"></p>
-      <div class="rowBtns">
-        <button class="ghost" id="copyBtn">Copy</button>
-        <button class="ghost" id="clearBtn">Clear</button>
-      </div>
+    <!-- Floating Drag Ghost Element -->
+    <div id="drag-ghost"></div>
+
+    <!-- ==================== SCREEN 1: MAIN MENU ==================== -->
+    <div id="main-menu" class="w-full max-w-md flex-1 flex flex-col items-center justify-between py-6 z-20 transition-all duration-300">
+        <!-- Logo Header -->
+        <div class="flex flex-col items-center mt-6">
+            <div class="flex items-center justify-center gap-1.5 mb-2 animated-title">
+                <div class="w-11 h-11 rounded-2xl block-oak flex items-center justify-center text-xl font-black text-amber-100 shadow-lg">W</div>
+                <div class="w-11 h-11 rounded-2xl block-pine flex items-center justify-center text-xl font-black text-amber-100 shadow-lg">O</div>
+                <div class="w-11 h-11 rounded-2xl block-mahogany flex items-center justify-center text-xl font-black text-amber-100 shadow-lg">O</div>
+                <div class="w-11 h-11 rounded-2xl block-walnut flex items-center justify-center text-xl font-black text-amber-100 shadow-lg">D</div>
+                <div class="w-11 h-11 rounded-2xl block-birch flex items-center justify-center text-xl font-black text-amber-100 shadow-lg">Y</div>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-black text-amber-300 tracking-wider drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] uppercase">
+                BLOCK PUZZLE
+            </h1>
+            <p class="text-xs font-bold text-amber-200/80 tracking-widest uppercase mt-1">Classic Tactile Edition</p>
+        </div>
+
+        <!-- Center Best Score Badge -->
+        <div class="wood-card w-4/5 rounded-3xl p-4 flex flex-col items-center text-center my-auto">
+            <div class="flex items-center gap-2 text-amber-300 font-extrabold text-sm uppercase tracking-widest mb-1">
+                <i class="fa-solid fa-trophy text-amber-400 text-base"></i> High Score
+            </div>
+            <span id="menu-high-score" class="text-4xl font-black text-white drop-shadow-md">0</span>
+        </div>
+
+        <!-- Buttons Stack -->
+        <div class="w-full px-6 space-y-3">
+            <button id="menu-play-btn" class="btn-wood w-full py-4 rounded-2xl text-2xl font-black text-amber-950 tracking-wider flex items-center justify-center gap-3">
+                <i class="fa-solid fa-play text-amber-900"></i> PLAY NOW
+            </button>
+
+            <div class="grid grid-cols-3 gap-3 pt-2">
+                <button id="menu-tutorial-btn" class="btn-wood-secondary py-3 rounded-2xl font-black text-sm text-white flex flex-col items-center justify-center gap-1">
+                    <i class="fa-solid fa-graduation-cap text-lg"></i>
+                    <span>HOW TO</span>
+                </button>
+                <button id="menu-theme-btn" class="btn-wood-secondary py-3 rounded-2xl font-black text-sm text-white flex flex-col items-center justify-center gap-1">
+                    <i class="fa-solid fa-palette text-lg"></i>
+                    <span>THEMES</span>
+                </button>
+                <button id="menu-sound-btn" class="btn-wood-icon py-3 rounded-2xl font-black text-sm text-white flex flex-col items-center justify-center gap-1">
+                    <i id="menu-sound-icon" class="fa-solid fa-volume-high text-lg"></i>
+                    <span id="menu-sound-text">SOUND ON</span>
+                </button>
+            </div>
+        </div>
     </div>
-  </section>
 
-  <section>
-    <div class="hist-head"><h2>RECENT</h2><span id="histCount"></span></div>
-    <ul id="hist"></ul>
-  </section>
 
-  <footer>PORIMAP · WEIGH · PRICE · REPEAT</footer>
-</main>
+    <!-- ==================== SCREEN 2: GAMEPLAY ==================== -->
+    <div id="game-screen" class="w-full max-w-md flex-1 flex flex-col items-center justify-between hidden z-20">
+        <!-- Top Bar Header -->
+        <header class="w-full flex items-center justify-between mb-2 pt-1 px-1">
+            <button id="pause-btn" class="btn-wood-icon w-11 h-11 rounded-2xl flex items-center justify-center text-lg text-white">
+                <i class="fa-solid fa-pause"></i>
+            </button>
 
-<div id="toast"></div>
+            <!-- Score Badges -->
+            <div class="flex gap-2">
+                <div class="wood-card px-4 py-1.5 rounded-2xl flex flex-col items-center min-w-[90px]">
+                    <span class="text-[10px] font-extrabold text-amber-300 uppercase tracking-wider">SCORE</span>
+                    <span id="current-score" class="text-xl font-black text-white leading-none">0</span>
+                </div>
+                <div class="wood-card px-4 py-1.5 rounded-2xl flex flex-col items-center min-w-[90px]">
+                    <span class="text-[10px] font-extrabold text-amber-400 uppercase tracking-wider">BEST</span>
+                    <span id="game-high-score" class="text-xl font-black text-amber-300 leading-none">0</span>
+                </div>
+            </div>
 
-<script>
-  const $ = id => document.getElementById(id);
-  const store = {
-    load() { try { return JSON.parse(localStorage.getItem('porimap_v2')) || {}; } catch(e){ return {}; } },
-    save(d) { try { localStorage.setItem('porimap_v2', JSON.stringify(d)); } catch(e){} }
-  };
-  let data = Object.assign({ rate:'', theme:'light', hist:[] }, store.load());
+            <button id="restart-game-btn" class="btn-wood-icon w-11 h-11 rounded-2xl flex items-center justify-center text-lg text-white">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
+        </header>
 
-  const SUN = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3L19 19M19 5l-1.7 1.7M6.7 17.3L5 19"/></svg>';
-  const MOON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13.5A8 8 0 0 1 10.5 4 8 8 0 1 0 20 13.5z"/></svg>';
+        <!-- Dynamic Combo Banner Popup -->
+        <div class="relative w-full flex justify-center h-7 my-1">
+            <div id="combo-banner" class="opacity-0 transition-all duration-300 transform scale-75 font-black text-sm tracking-wider px-5 py-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 text-amber-950 border-2 border-amber-200 shadow-xl">
+                COMBO x2!
+            </div>
+        </div>
 
-  function applyTheme(){
-    document.documentElement.classList.toggle('dark', data.theme === 'dark');
-    $('themeBtn').innerHTML = data.theme === 'dark' ? MOON : SUN;
-  }
-  $('themeBtn').onclick = () => {
-    data.theme = data.theme === 'dark' ? 'light' : 'dark';
-    store.save(data); applyTheme();
-  };
-  applyTheme();
+        <!-- Main Board Matrix -->
+        <div class="relative w-full aspect-square wood-card p-3 rounded-3xl flex items-center justify-center">
+            <div id="board" class="w-full h-full grid grid-cols-8 grid-rows-8 gap-1.5 p-1 rounded-2xl bg-black/40">
+                <!-- Grid Cells populated by JS -->
+            </div>
+        </div>
 
-  if (data.rate !== '') $('rate').value = data.rate;
-  $('rate').addEventListener('input', e => { data.rate = e.target.value; store.save(data); });
+        <!-- Bottom Dock (3 Pieces) -->
+        <div class="w-full my-3 flex items-center justify-between gap-2 min-h-[115px]">
+            <div id="dock-0" class="dock-piece flex-1 h-28 wood-card rounded-2xl p-2 flex items-center justify-center cursor-pointer transition-transform duration-150"></div>
+            <div id="dock-1" class="dock-piece flex-1 h-28 wood-card rounded-2xl p-2 flex items-center justify-center cursor-pointer transition-transform duration-150"></div>
+            <div id="dock-2" class="dock-piece flex-1 h-28 wood-card rounded-2xl p-2 flex items-center justify-center cursor-pointer transition-transform duration-150"></div>
+        </div>
 
-  function toast(msg){
-    const t = $('toast'); t.textContent = msg; t.style.display = 'block';
-    clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 1800);
-  }
+        <p class="text-xs text-amber-200/60 font-semibold mb-1">Drag shapes to the grid to fill lines & columns!</p>
+    </div>
 
-  function renderHist(){
-    const ul = $('hist'); ul.innerHTML = '';
-    $('histCount').textContent = data.hist.length ? data.hist.length + ' entries' : '';
-    if (!data.hist.length) { ul.innerHTML = '<li class="empty">Nothing calculated yet</li>'; return; }
-    data.hist.forEach(h => {
-      const li = document.createElement('li');
-      li.innerHTML = `<span>${h.weight} g · ৳${h.rate} / kg</span><b>৳${h.total}</b>`;
-      ul.appendChild(li);
-    });
-  }
-  renderHist();
 
-  let lastTotal = '';
-  function calculate(){
-    const rate = parseFloat($('rate').value);
-    const weight = parseFloat($('weight').value);
-    if (!(rate > 0) || !(weight > 0)) { toast('Enter a valid rate and weight'); return; }
+    <!-- ==================== MODALS ==================== -->
 
-    const total = Math.round((rate / 1000) * weight * 100) / 100;   // per-kg rate → gram weight
-    const taka = Math.floor(total);
-    const poisha = Math.round((total - taka) * 100);                // fraction of 1 taka
-    lastTotal = total.toFixed(2);
+    <!-- PAUSE MODAL -->
+    <div id="pause-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="wood-card p-6 rounded-3xl max-w-xs w-11/12 text-center text-white space-y-4">
+            <div class="w-14 h-14 bg-amber-500/20 border-2 border-amber-500/40 text-amber-300 rounded-2xl flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-pause"></i>
+            </div>
+            <h3 class="text-2xl font-black text-amber-300 uppercase">GAME PAUSED</h3>
+            
+            <div class="space-y-2.5 pt-2">
+                <button id="pause-resume-btn" class="btn-wood w-full py-3.5 rounded-2xl text-amber-950 font-black text-lg">
+                    RESUME
+                </button>
+                <button id="pause-restart-btn" class="btn-wood-secondary w-full py-3 rounded-2xl text-white font-black text-sm">
+                    RESTART
+                </button>
+                <button id="pause-audio-btn" class="btn-wood-icon w-full py-3 rounded-2xl text-white font-black text-sm flex items-center justify-center gap-2">
+                    <i id="pause-sound-icon" class="fa-solid fa-volume-high"></i>
+                    <span id="pause-sound-text">SOUND & MUSIC: ON</span>
+                </button>
+                <button id="pause-quit-btn" class="w-full py-3 rounded-2xl bg-rose-900/60 hover:bg-rose-900 border-2 border-rose-600 text-rose-200 font-black text-sm">
+                    QUIT TO MENU
+                </button>
+            </div>
+        </div>
+    </div>
 
-    $('priceBig').innerHTML = `৳${taka}.<small>${String(poisha).padStart(2,'0')}</small>`;
-    $('breakdown').textContent = `${taka} taka and ${poisha} poisha — .${String(poisha).padStart(2,'0')} is ${poisha}% of one taka`;
-    $('formula').textContent = `৳${rate} / kg × ${weight} g = ৳${lastTotal}`;
-    const r = $('result');
-    r.classList.remove('show'); void r.offsetWidth; r.classList.add('show');
+    <!-- 1. TUTORIAL MODAL -->
+    <div id="tutorial-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="wood-card p-6 rounded-3xl max-w-xs w-11/12 text-center text-white">
+            <div class="w-12 h-12 rounded-2xl block-oak flex items-center justify-center text-2xl mx-auto mb-3 text-amber-100">
+                <i class="fa-solid fa-lightbulb"></i>
+            </div>
+            <h3 class="text-2xl font-black text-amber-300 mb-3 uppercase">HOW TO PLAY</h3>
+            <ul class="text-left text-xs font-bold text-amber-100 space-y-2.5 mb-6">
+                <li class="flex items-start gap-2">
+                    <span class="bg-amber-500 text-amber-950 rounded-full w-5 h-5 flex items-center justify-center text-xs font-black shrink-0">1</span>
+                    <span>Drag and drop blocks onto the 8x8 grid.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="bg-amber-500 text-amber-950 rounded-full w-5 h-5 flex items-center justify-center text-xs font-black shrink-0">2</span>
+                    <span>Fill full horizontal or vertical lines to clear them.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="bg-amber-500 text-amber-950 rounded-full w-5 h-5 flex items-center justify-center text-xs font-black shrink-0">3</span>
+                    <span>Clear multiple lines at once to trigger big COMBO bonuses!</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="bg-amber-500 text-amber-950 rounded-full w-5 h-5 flex items-center justify-center text-xs font-black shrink-0">4</span>
+                    <span>Game ends when no space is left for new blocks.</span>
+                </li>
+            </ul>
+            <button id="close-tutorial-btn" class="btn-wood w-full py-3 rounded-2xl text-amber-950 font-black text-base">
+                GOT IT!
+            </button>
+        </div>
+    </div>
 
-    data.hist.unshift({ rate, weight, total: lastTotal });
-    data.hist = data.hist.slice(0, 8);
-    store.save(data); renderHist();
-  }
-  $('calcBtn').onclick = calculate;
+    <!-- 2. THEMES MODAL -->
+    <div id="theme-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="wood-card p-6 rounded-3xl max-w-xs w-11/12 text-center text-white">
+            <h3 class="text-2xl font-black text-amber-300 mb-4 uppercase">CHOOSE THEME</h3>
+            
+            <div class="space-y-3 mb-6">
+                <button onclick="setTheme('blast')" class="w-full p-3 rounded-2xl bg-purple-900 border-2 border-purple-500 flex items-center justify-between hover:brightness-110">
+                    <span class="font-black text-amber-300">Vibrant Blast (New)</span>
+                    <div class="flex gap-1">
+                        <div class="w-4 h-4 rounded bg-amber-400"></div>
+                        <div class="w-4 h-4 rounded bg-purple-600"></div>
+                        <div class="w-4 h-4 rounded bg-blue-500"></div>
+                    </div>
+                </button>
+                <button onclick="setTheme('wood')" class="w-full p-3 rounded-2xl bg-amber-950 border-2 border-amber-600 flex items-center justify-between hover:brightness-110">
+                    <span class="font-black text-amber-200">Wood Classic</span>
+                    <div class="flex gap-1">
+                        <div class="w-4 h-4 rounded bg-amber-600"></div>
+                        <div class="w-4 h-4 rounded bg-amber-800"></div>
+                    </div>
+                </button>
+                <button onclick="setTheme('gem')" class="w-full p-3 rounded-2xl bg-slate-900 border-2 border-slate-700 flex items-center justify-between hover:brightness-110">
+                    <span class="font-black text-sky-300">Gem Jewel</span>
+                    <div class="flex gap-1">
+                        <div class="w-4 h-4 rounded bg-sky-500"></div>
+                        <div class="w-4 h-4 rounded bg-purple-500"></div>
+                    </div>
+                </button>
+                <button onclick="setTheme('toy')" class="w-full p-3 rounded-2xl bg-amber-100 border-2 border-amber-300 flex items-center justify-between hover:brightness-110">
+                    <span class="font-black text-amber-900">Toy Pastel</span>
+                    <div class="flex gap-1">
+                        <div class="w-4 h-4 rounded bg-pink-400"></div>
+                        <div class="w-4 h-4 rounded bg-blue-400"></div>
+                    </div>
+                </button>
+            </div>
 
-  // Enter: rate → weight → calculate
-  $('rate').addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); $('weight').focus(); }
-  });
-  $('weight').addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); calculate(); }
-  });
+            <button id="close-theme-btn" class="btn-wood w-full py-3 rounded-2xl text-amber-950 font-black text-base">
+                CLOSE
+            </button>
+        </div>
+    </div>
 
-  $('clearBtn').onclick = () => {
-    $('weight').value = ''; $('result').classList.remove('show');
-  };
-  $('copyBtn').onclick = () => {
-    if (!lastTotal) return;
-    const done = () => toast('Copied ৳' + lastTotal);
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText('৳' + lastTotal).then(done).catch(() => toast('৳' + lastTotal));
-    } else { toast('৳' + lastTotal); }
-  };
-</script>
+    <!-- 3. GAME OVER MODAL -->
+    <div id="game-over-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="wood-card p-6 rounded-3xl max-w-xs w-11/12 text-center text-white space-y-4">
+            <div class="w-14 h-14 bg-rose-500/20 border-2 border-rose-500/40 text-rose-400 rounded-2xl flex items-center justify-center mx-auto text-2xl font-black">
+                <i class="fa-solid fa-skull"></i>
+            </div>
+            <h3 class="text-2xl font-black text-rose-400 uppercase">NO MORE MOVES!</h3>
+
+            <div class="wood-card p-3 rounded-2xl space-y-1">
+                <div class="text-xs font-bold text-amber-300 uppercase">FINAL SCORE</div>
+                <div id="final-score" class="text-3xl font-black text-white">0</div>
+                <div class="text-[10px] font-extrabold text-amber-200/60 uppercase">BEST: <span id="modal-high-score" class="text-amber-300">0</span></div>
+            </div>
+            
+            <div class="space-y-2 pt-2">
+                <button id="modal-restart-btn" class="btn-wood w-full py-3 rounded-2xl text-amber-950 font-black text-base">
+                    PLAY AGAIN
+                </button>
+                <button id="modal-menu-btn" class="btn-wood-secondary w-full py-3 rounded-2xl text-white font-black text-sm">
+                    MAIN MENU
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. AUDIO & MUSIC SETTINGS MODAL -->
+    <div id="audio-settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="wood-card p-6 rounded-3xl max-w-xs w-11/12 text-center text-white space-y-4">
+            <h3 class="text-2xl font-black text-amber-300 uppercase">CUSTOM MUSIC</h3>
+            <p class="text-xs font-semibold text-amber-200/80">Paste a Web MP3 Link or Upload your own Audio file!</p>
+            
+            <div class="space-y-3 text-left">
+                <div>
+                    <label class="text-[11px] font-bold text-amber-300 uppercase block mb-1">Custom Music URL (.mp3 / .ogg)</label>
+                    <input id="custom-music-url" type="url" placeholder="https://example.com/song.mp3" class="w-full px-3 py-2 rounded-xl bg-black/50 border border-amber-500/40 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-amber-400">
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-amber-200/60 uppercase">OR</span>
+                    <div class="h-px bg-amber-500/30 flex-1"></div>
+                </div>
+
+                <div>
+                    <label class="text-[11px] font-bold text-amber-300 uppercase block mb-1">Upload Device Audio File</label>
+                    <input id="custom-music-file" type="file" accept="audio/*" class="w-full text-xs text-amber-200 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-extrabold file:bg-amber-500 file:text-amber-950 hover:file:bg-amber-400 cursor-pointer">
+                </div>
+            </div>
+
+            <div class="flex gap-2 pt-2">
+                <button id="apply-custom-audio-btn" class="btn-wood flex-1 py-2.5 rounded-xl text-amber-950 font-black text-xs">
+                    APPLY MUSIC
+                </button>
+                <button id="reset-audio-btn" class="btn-wood-secondary flex-1 py-2.5 rounded-xl text-white font-black text-xs">
+                    USE SYNTH BGM
+                </button>
+            </div>
+            <button id="close-audio-modal-btn" class="w-full py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs">
+                CLOSE
+            </button>
+        </div>
+    </div>
+
+    <!-- AUDIO SYNTHESIZER & GAME LOGIC -->
+    <script>
+        // --- CONSTANTS & STATE ---
+        const BOARD_SIZE = 8;
+        let boardState = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(null));
+        let score = 0;
+        let highScore = parseInt(localStorage.getItem('woody_puzzle_highscore') || '0', 10);
+        let soundEnabled = true;
+        let customAudioElement = null;
+        let customAudioSource = null;
+        let dockPieces = [null, null, null];
+        let selectedDockIndex = null;
+        let isDragging = false;
+        let dragSourceIndex = null;
+
+        // DOM References
+        const mainMenu = document.getElementById('main-menu');
+        const gameScreen = document.getElementById('game-screen');
+        const boardEl = document.getElementById('board');
+        const scoreEl = document.getElementById('current-score');
+        const gameHighScoreEl = document.getElementById('game-high-score');
+        const menuHighScoreEl = document.getElementById('menu-high-score');
+        const comboBanner = document.getElementById('combo-banner');
+        const dragGhost = document.getElementById('drag-ghost');
+        const particleCanvas = document.getElementById('particle-canvas');
+        const ctx = particleCanvas.getContext('2d');
+
+        // Particle System Implementation
+        let particles = [];
+
+        function resizeParticleCanvas() {
+            particleCanvas.width = window.innerWidth;
+            particleCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeParticleCanvas);
+        resizeParticleCanvas();
+
+        function createParticles(x, y, color = '#f59e0b', count = 12) {
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 6 + 2;
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: Math.random() * 5 + 3,
+                    color: color,
+                    alpha: 1,
+                    decay: Math.random() * 0.03 + 0.02
+                });
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+            
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.15; // Gravity effect
+                p.alpha -= p.decay;
+
+                if (p.alpha <= 0) {
+                    particles.splice(i, 1);
+                    continue;
+                }
+
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // Block Color Types (Themes adapt these)
+        const BLOCK_STYLES = ['block-oak', 'block-pine', 'block-mahogany', 'block-walnut', 'block-birch'];
+
+        // Shape Configurations
+        const SHAPES = [
+            { matrix: [[1]], style: 'block-birch' },
+            { matrix: [[1, 1]], style: 'block-pine' },
+            { matrix: [[1], [1]], style: 'block-pine' },
+            { matrix: [[1, 1, 1]], style: 'block-oak' },
+            { matrix: [[1], [1], [1]], style: 'block-oak' },
+            { matrix: [[1, 1, 1, 1]], style: 'block-mahogany' },
+            { matrix: [[1], [1], [1], [1]], style: 'block-mahogany' },
+            { matrix: [[1, 1], [1, 1]], style: 'block-walnut' },
+            { matrix: [[1, 1], [1, 0]], style: 'block-oak' },
+            { matrix: [[1, 1], [0, 1]], style: 'block-oak' },
+            { matrix: [[1, 0], [1, 1]], style: 'block-oak' },
+            { matrix: [[0, 1], [1, 1]], style: 'block-oak' },
+            { matrix: [[1, 0], [1, 0], [1, 1]], style: 'block-mahogany' },
+            { matrix: [[1, 1, 1], [1, 0, 0]], style: 'block-mahogany' },
+            { matrix: [[1, 1, 1], [0, 1, 0]], style: 'block-birch' }
+        ];
+
+        // --- ENHANCED REALISTIC WOOD AUDIO & MUSIC SYNTHESIZER ---
+        class WebAudioSFX {
+            constructor() {
+                this.audioCtx = null;
+                this.bgMusicTimer = null;
+                this.musicStep = 0;
+                this.isMusicPlaying = false;
+            }
+            init() {
+                if (!this.audioCtx) {
+                    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+            }
+
+            // Realistic Wood Pickup/Thud (Filtered Wood Resonance)
+            playPop() {
+                if (!soundEnabled) return;
+                this.init();
+                const now = this.audioCtx.currentTime;
+                
+                // Wood tap pitch body
+                const osc = this.audioCtx.createOscillator();
+                const gain = this.audioCtx.createGain();
+                const filter = this.audioCtx.createBiquadFilter();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(280, now);
+                osc.frequency.exponentialRampToValueAtTime(120, now + 0.05);
+
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(800, now);
+
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.audioCtx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.06);
+            }
+
+            // Realistic Dense Wood Drop / Placement Snap
+            playWoodThud() {
+                if (!soundEnabled) return;
+                this.init();
+                const now = this.audioCtx.currentTime;
+
+                // 1. Low Wood Impact
+                const osc = this.audioCtx.createOscillator();
+                const oscGain = this.audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.exponentialRampToValueAtTime(65, now + 0.09);
+
+                oscGain.gain.setValueAtTime(0.6, now);
+                oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+
+                osc.connect(oscGain);
+                oscGain.connect(this.audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.09);
+
+                // 2. Tactile Wood Click/Snap (Noise burst)
+                const bufferSize = this.audioCtx.sampleRate * 0.03;
+                const buffer = this.audioCtx.createBuffer(1, bufferSize, this.audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+
+                const noise = this.audioCtx.createBufferSource();
+                noise.buffer = buffer;
+
+                const noiseFilter = this.audioCtx.createBiquadFilter();
+                noiseFilter.type = 'bandpass';
+                noiseFilter.frequency.setValueAtTime(1400, now);
+                noiseFilter.Q.setValueAtTime(3, now);
+
+                const noiseGain = this.audioCtx.createGain();
+                noiseGain.gain.setValueAtTime(0.35, now);
+                noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+
+                noise.connect(noiseFilter);
+                noiseFilter.connect(noiseGain);
+                noiseGain.connect(this.audioCtx.destination);
+
+                noise.start(now);
+            }
+
+            // Realistic Wood Crunch & Shatter for Line Clear
+            playLineClear(lines = 1) {
+                if (!soundEnabled) return;
+                this.init();
+                const now = this.audioCtx.currentTime;
+
+                // Multi-stage wood crackle
+                const count = Math.min(lines, 4);
+                for (let i = 0; i < count + 2; i++) {
+                    const delay = i * 0.045;
+
+                    // Wood Splinter Snap
+                    const bufferSize = this.audioCtx.sampleRate * 0.04;
+                    const buffer = this.audioCtx.createBuffer(1, bufferSize, this.audioCtx.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let j = 0; j < bufferSize; j++) {
+                        data[j] = Math.random() * 2 - 1;
+                    }
+
+                    const noise = this.audioCtx.createBufferSource();
+                    noise.buffer = buffer;
+
+                    const noiseFilter = this.audioCtx.createBiquadFilter();
+                    noiseFilter.type = 'bandpass';
+                    noiseFilter.frequency.setValueAtTime(1200 + Math.random() * 800, now + delay);
+                    noiseFilter.Q.setValueAtTime(4, now + delay);
+
+                    const noiseGain = this.audioCtx.createGain();
+                    noiseGain.gain.setValueAtTime(0.4, now + delay);
+                    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.04);
+
+                    noise.connect(noiseFilter);
+                    noiseFilter.connect(noiseGain);
+                    noiseGain.connect(this.audioCtx.destination);
+                    noise.start(now + delay);
+
+                    // Wooden Marimba Cleared Pitch
+                    const pitchOsc = this.audioCtx.createOscillator();
+                    const pitchGain = this.audioCtx.createGain();
+                    const frequencies = [329.63, 392.00, 523.25, 659.25, 783.99];
+                    const freq = frequencies[Math.min(i, frequencies.length - 1)];
+
+                    pitchOsc.type = 'triangle';
+                    pitchOsc.frequency.setValueAtTime(freq, now + delay);
+
+                    pitchGain.gain.setValueAtTime(0.3, now + delay);
+                    pitchGain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.18);
+
+                    pitchOsc.connect(pitchGain);
+                    pitchGain.connect(this.audioCtx.destination);
+                    pitchOsc.start(now + delay);
+                    pitchOsc.stop(now + delay + 0.18);
+                }
+            }
+
+            playClick() {
+                if (!soundEnabled) return;
+                this.init();
+                const now = this.audioCtx.currentTime;
+                const osc = this.audioCtx.createOscillator();
+                const gain = this.audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(450, now);
+                osc.frequency.exponentialRampToValueAtTime(200, now + 0.03);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.03);
+                osc.connect(gain);
+                gain.connect(this.audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.03);
+            }
+
+            // Custom or Synth BGM Manager
+            startBgMusic() {
+                if (this.isMusicPlaying) return;
+                this.isMusicPlaying = true;
+
+                if (customAudioElement && customAudioSource) {
+                    customAudioElement.loop = true;
+                    customAudioElement.play().catch(() => {});
+                    return;
+                }
+
+                const melody = [
+                    261.63, 329.63, 392.00, 523.25,
+                    329.63, 392.00, 440.00, 392.00,
+                    293.66, 349.23, 392.00, 440.00,
+                    261.63, 329.63, 392.00, 329.63
+                ];
+
+                const playNote = () => {
+                    if (!soundEnabled || !this.isMusicPlaying) return;
+                    this.init();
+                    const now = this.audioCtx.currentTime;
+                    const freq = melody[this.musicStep % melody.length];
+                    this.musicStep++;
+
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+                    const filter = this.audioCtx.createBiquadFilter();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now);
+
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(1000, now);
+
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(this.audioCtx.destination);
+
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                };
+
+                this.bgMusicTimer = setInterval(playNote, 420);
+            }
+
+            stopBgMusic() {
+                this.isMusicPlaying = false;
+                if (customAudioElement) {
+                    customAudioElement.pause();
+                }
+                if (this.bgMusicTimer) {
+                    clearInterval(this.bgMusicTimer);
+                    this.bgMusicTimer = null;
+                }
+            }
+
+            toggleAudio() {
+                soundEnabled = !soundEnabled;
+                if (soundEnabled) {
+                    this.startBgMusic();
+                } else {
+                    this.stopBgMusic();
+                }
+                return soundEnabled;
+            }
+        }
+        const sfx = new WebAudioSFX();
+
+        // Custom Music Handlers
+        document.getElementById('apply-custom-audio-btn').onclick = () => {
+            const urlInput = document.getElementById('custom-music-url').value.trim();
+            const fileInput = document.getElementById('custom-music-file').files[0];
+
+            let musicSrc = null;
+
+            if (fileInput) {
+                musicSrc = URL.createObjectURL(fileInput);
+            } else if (urlInput) {
+                musicSrc = urlInput;
+            }
+
+            if (musicSrc) {
+                if (customAudioElement) {
+                    customAudioElement.pause();
+                }
+                customAudioElement = new Audio(musicSrc);
+                customAudioSource = musicSrc;
+
+                sfx.stopBgMusic();
+                if (soundEnabled) sfx.startBgMusic();
+            }
+
+            document.getElementById('audio-settings-modal').classList.add('opacity-0', 'pointer-events-none');
+        };
+
+        document.getElementById('reset-audio-btn').onclick = () => {
+            if (customAudioElement) {
+                customAudioElement.pause();
+                customAudioElement = null;
+                customAudioSource = null;
+            }
+            document.getElementById('custom-music-url').value = '';
+            document.getElementById('custom-music-file').value = '';
+
+            sfx.stopBgMusic();
+            if (soundEnabled) sfx.startBgMusic();
+            document.getElementById('audio-settings-modal').classList.add('opacity-0', 'pointer-events-none');
+        };
+
+        document.getElementById('close-audio-modal-btn').onclick = () => {
+            document.getElementById('audio-settings-modal').classList.add('opacity-0', 'pointer-events-none');
+        };
+
+        // Long press/double tap on Sound button to configure audio
+        document.getElementById('menu-sound-btn').oncontextmenu = (e) => {
+            e.preventDefault();
+            document.getElementById('audio-settings-modal').classList.remove('opacity-0', 'pointer-events-none');
+        };
+        document.getElementById('pause-audio-btn').oncontextmenu = (e) => {
+            e.preventDefault();
+            document.getElementById('audio-settings-modal').classList.remove('opacity-0', 'pointer-events-none');
+        };
+
+        // Set Default Theme to Blast
+        setTheme('blast');
+
+        // --- BOARD & GRID LOGIC ---
+        function initBoard() {
+            boardState = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(null));
+            score = 0;
+            updateScore(0);
+            renderBoard();
+            spawnDockPieces();
+        }
+
+        function renderBoard() {
+            boardEl.innerHTML = '';
+            for (let r = 0; r < BOARD_SIZE; r++) {
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    const cell = document.createElement('div');
+                    const styleClass = boardState[r][c];
+
+                    cell.className = 'board-cell rounded-lg flex items-center justify-center relative overflow-hidden';
+                    if (styleClass) {
+                        cell.classList.add(styleClass);
+                    }
+                    boardEl.appendChild(cell);
+                }
+            }
+        }
+
+        // --- DOCK / SHAPE SPAWNING ---
+        function spawnDockPieces() {
+            for (let i = 0; i < 3; i++) {
+                if (dockPieces[i] === null) {
+                    const randShape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+                    dockPieces[i] = JSON.parse(JSON.stringify(randShape));
+                }
+            }
+            renderDock();
+            checkGameOver();
+        }
+
+        function renderDock() {
+            for (let i = 0; i < 3; i++) {
+                const dockEl = document.getElementById(`dock-${i}`);
+                dockEl.innerHTML = '';
+                dockEl.style.opacity = '1';
+
+                const piece = dockPieces[i];
+                if (!piece) continue;
+
+                if (!canShapeFitAnywhere(piece.matrix)) {
+                    dockEl.style.opacity = '0.35';
+                }
+
+                const container = document.createElement('div');
+                const rows = piece.matrix.length;
+                const cols = piece.matrix[0].length;
+
+                container.className = 'grid gap-1 pointer-events-none';
+                container.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const cell = document.createElement('div');
+                        if (piece.matrix[r][c] === 1) {
+                            cell.className = `w-4 h-4 md:w-5 md:h-5 rounded-md ${piece.style}`;
+                        } else {
+                            cell.className = 'w-4 h-4 md:w-5 md:h-5 opacity-0';
+                        }
+                        container.appendChild(cell);
+                    }
+                }
+                dockEl.appendChild(container);
+            }
+        }
+
+        // --- PLACEMENT LOGIC ---
+        function canPlaceShape(matrix, startRow, startCol) {
+            const rows = matrix.length;
+            const cols = matrix[0].length;
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (matrix[r][c] === 1) {
+                        const tr = startRow + r;
+                        const tc = startCol + c;
+                        if (tr < 0 || tr >= BOARD_SIZE || tc < 0 || tc >= BOARD_SIZE) return false;
+                        if (boardState[tr][tc] !== null) return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function canShapeFitAnywhere(matrix) {
+            for (let r = 0; r < BOARD_SIZE; r++) {
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    if (canPlaceShape(matrix, r, c)) return true;
+                }
+            }
+            return false;
+        }
+
+        function placeShape(piece, startRow, startCol) {
+            const matrix = piece.matrix;
+            const style = piece.style;
+            let count = 0;
+
+            for (let r = 0; r < matrix.length; r++) {
+                for (let c = 0; c < matrix[0].length; c++) {
+                    if (matrix[r][c] === 1) {
+                        const tr = startRow + r;
+                        const tc = startCol + c;
+                        boardState[tr][tc] = style;
+                        count++;
+
+                        // Add bounce effect
+                        const cellEl = boardEl.children[tr * BOARD_SIZE + tc];
+                        cellEl.classList.add('placed-bounce');
+                        setTimeout(() => cellEl.classList.remove('placed-bounce'), 250);
+                    }
+                }
+            }
+
+            sfx.playWoodThud();
+            updateScore(score + count * 10);
+            renderBoard();
+            checkAndClearLines();
+
+            if (dragSourceIndex !== null) dockPieces[dragSourceIndex] = null;
+            else if (selectedDockIndex !== null) dockPieces[selectedDockIndex] = null;
+
+            selectedDockIndex = null;
+            dragSourceIndex = null;
+
+            if (dockPieces.every(p => p === null)) {
+                spawnDockPieces();
+            } else {
+                renderDock();
+                checkGameOver();
+            }
+        }
+
+        // --- LINE CLEARING & COMBOS ---
+        function checkAndClearLines() {
+            let fullRows = [];
+            let fullCols = [];
+
+            for (let r = 0; r < BOARD_SIZE; r++) {
+                if (boardState[r].every(c => c !== null)) fullRows.push(r);
+            }
+
+            for (let c = 0; c < BOARD_SIZE; c++) {
+                let full = true;
+                for (let r = 0; r < BOARD_SIZE; r++) {
+                    if (boardState[r][c] === null) { full = false; break; }
+                }
+                if (full) fullCols.push(c);
+            }
+
+            const linesCleared = fullRows.length + fullCols.length;
+
+            if (linesCleared > 0) {
+                sfx.playLineClear(linesCleared);
+
+                const clearCells = new Set();
+                fullRows.forEach(r => { for (let c = 0; c < BOARD_SIZE; c++) clearCells.add(`${r},${c}`); });
+                fullCols.forEach(c => { for (let r = 0; r < BOARD_SIZE; r++) clearCells.add(`${r},${c}`); });
+
+                // Spawn Splinter Particles & Anim Class
+                clearCells.forEach(coord => {
+                    const [r, c] = coord.split(',').map(Number);
+                    const cellEl = boardEl.children[r * BOARD_SIZE + c];
+                    const rect = cellEl.getBoundingClientRect();
+                    createParticles(rect.left + rect.width / 2, rect.top + rect.height / 2, '#f59e0b', 12);
+                    cellEl.classList.add('clearing');
+                });
+
+                const bonus = linesCleared * 150 + (linesCleared > 1 ? linesCleared * 100 : 0);
+                updateScore(score + bonus);
+                showComboBanner(linesCleared);
+
+                setTimeout(() => {
+                    clearCells.forEach(coord => {
+                        const [r, c] = coord.split(',').map(Number);
+                        boardState[r][c] = null;
+                    });
+                    renderBoard();
+                    checkGameOver();
+                }, 350);
+            }
+        }
+
+        function showComboBanner(lines) {
+            comboBanner.textContent = lines > 1 ? `SUPER COMBO x${lines}! +${lines * 150}` : `LINE CLEAR! +150`;
+            comboBanner.classList.remove('opacity-0', 'scale-75');
+            comboBanner.classList.add('opacity-100', 'scale-100');
+
+            if (lines >= 3 && typeof confetti === 'function') {
+                confetti({ particleCount: 40, spread: 60, origin: { y: 0.7 } });
+            }
+
+            setTimeout(() => {
+                comboBanner.classList.remove('opacity-100', 'scale-100');
+                comboBanner.classList.add('opacity-0', 'scale-75');
+            }, 1200);
+        }
+
+        function updateScore(val) {
+            score = val;
+            scoreEl.textContent = score;
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('woody_puzzle_highscore', highScore.toString());
+            }
+            gameHighScoreEl.textContent = highScore;
+            menuHighScoreEl.textContent = highScore;
+        }
+
+        function checkGameOver() {
+            const activePieces = dockPieces.filter(p => p !== null);
+            if (activePieces.length === 0) return;
+
+            const canFit = activePieces.some(p => canShapeFitAnywhere(p.matrix));
+
+            if (!canFit) {
+                setTimeout(() => {
+                    document.getElementById('final-score').textContent = score;
+                    document.getElementById('modal-high-score').textContent = highScore;
+                    const modal = document.getElementById('game-over-modal');
+                    modal.classList.remove('opacity-0', 'pointer-events-none');
+                }, 400);
+            }
+        }
+
+        // --- PREVIEWS & DRAGGING ENGINE ---
+        function clearPreviews() {
+            const cells = boardEl.querySelectorAll('.board-cell');
+            cells.forEach(c => c.classList.remove('preview-valid', 'preview-invalid'));
+        }
+
+        function highlightPreview(startRow, startCol, matrix) {
+            clearPreviews();
+            const isValid = canPlaceShape(matrix, startRow, startCol);
+
+            for (let r = 0; r < matrix.length; r++) {
+                for (let c = 0; c < matrix[0].length; c++) {
+                    if (matrix[r][c] === 1) {
+                        const tr = startRow + r;
+                        const tc = startCol + c;
+                        if (tr >= 0 && tr < BOARD_SIZE && tc >= 0 && tc < BOARD_SIZE) {
+                            const cellEl = boardEl.children[tr * BOARD_SIZE + tc];
+                            cellEl.classList.add(isValid ? 'preview-valid' : 'preview-invalid');
+                        }
+                    }
+                }
+            }
+        }
+
+        function getBoardCoordsFromPoint(clientX, clientY, matrix) {
+            const rect = boardEl.getBoundingClientRect();
+            if (clientX < rect.left - 20 || clientX > rect.right + 20 || clientY < rect.top - 20 || clientY > rect.bottom + 20) {
+                return null;
+            }
+
+            const cellSize = rect.width / BOARD_SIZE;
+            const rows = matrix.length;
+            const cols = matrix[0].length;
+
+            let col = Math.floor((clientX - rect.left) / cellSize - (cols - 1) / 2);
+            let row = Math.floor((clientY - rect.top) / cellSize - (rows - 1) / 2);
+
+            row = Math.max(0, Math.min(BOARD_SIZE - rows, row));
+            col = Math.max(0, Math.min(BOARD_SIZE - cols, col));
+
+            return { row, col };
+        }
+
+        function updateDragGhost(piece, x, y) {
+            dragGhost.innerHTML = '';
+            if (!piece) {
+                dragGhost.style.display = 'none';
+                return;
+            }
+
+            const container = document.createElement('div');
+            const rows = piece.matrix.length;
+            const cols = piece.matrix[0].length;
+
+            container.className = 'grid gap-1';
+            container.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cell = document.createElement('div');
+                    if (piece.matrix[r][c] === 1) {
+                        cell.className = `w-8 h-8 md:w-10 md:h-10 rounded-lg ${piece.style} shadow-xl`;
+                    } else {
+                        cell.className = 'w-8 h-8 md:w-10 md:h-10 opacity-0';
+                    }
+                    container.appendChild(cell);
+                }
+            }
+
+            dragGhost.appendChild(container);
+            dragGhost.style.display = 'block';
+            dragGhost.style.left = `${x}px`;
+            dragGhost.style.top = `${y - 40}px`;
+        }
+
+        // --- DOCK EVENT LISTENERS ---
+        for (let i = 0; i < 3; i++) {
+            const dockEl = document.getElementById(`dock-${i}`);
+
+            const startDrag = (e) => {
+                const piece = dockPieces[i];
+                if (!piece || !canShapeFitAnywhere(piece.matrix)) return;
+
+                isDragging = true;
+                dragSourceIndex = i;
+                sfx.playPop();
+
+                const pointer = e.touches ? e.touches[0] : e;
+                updateDragGhost(piece, pointer.clientX, pointer.clientY);
+            };
+
+            dockEl.addEventListener('touchstart', startDrag, { passive: true });
+            dockEl.addEventListener('mousedown', startDrag);
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging || dragSourceIndex === null) return;
+            const piece = dockPieces[dragSourceIndex];
+            updateDragGhost(piece, e.clientX, e.clientY);
+
+            const pos = getBoardCoordsFromPoint(e.clientX, e.clientY - 40, piece.matrix);
+            if (pos) highlightPreview(pos.row, pos.col, piece.matrix);
+            else clearPreviews();
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging || dragSourceIndex === null) return;
+            const pointer = e.touches[0];
+            const piece = dockPieces[dragSourceIndex];
+            updateDragGhost(piece, pointer.clientX, pointer.clientY);
+
+            const pos = getBoardCoordsFromPoint(pointer.clientX, pointer.clientY - 40, piece.matrix);
+            if (pos) highlightPreview(pos.row, pos.col, piece.matrix);
+            else clearPreviews();
+        }, { passive: true });
+
+        const endDrag = (e) => {
+            if (!isDragging || dragSourceIndex === null) return;
+            const pointer = e.changedTouches ? e.changedTouches[0] : e;
+            const piece = dockPieces[dragSourceIndex];
+
+            if (piece) {
+                const pos = getBoardCoordsFromPoint(pointer.clientX, pointer.clientY - 40, piece.matrix);
+                if (pos && canPlaceShape(piece.matrix, pos.row, pos.col)) {
+                    placeShape(piece, pos.row, pos.col);
+                }
+            }
+
+            isDragging = false;
+            dragSourceIndex = null;
+            updateDragGhost(null, 0, 0);
+            clearPreviews();
+        };
+
+        window.addEventListener('mouseup', endDrag);
+        window.addEventListener('touchend', endDrag);
+
+        // --- THEME SWITCHING ---
+        function setTheme(themeName) {
+            document.body.className = `theme-${themeName} min-h-screen flex flex-col items-center justify-between p-3 md:p-5 text-white overflow-hidden select-none`;
+            document.getElementById('theme-modal').classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        // --- UI NAVIGATION & PAUSE MODAL ENGINE ---
+        function syncAudioUI() {
+            const iconClass = soundEnabled ? 'fa-solid fa-volume-high text-lg' : 'fa-solid fa-volume-xmark text-lg';
+            const labelText = soundEnabled ? 'SOUND & MUSIC: ON' : 'SOUND & MUSIC: OFF';
+
+            document.getElementById('menu-sound-icon').className = iconClass;
+            document.getElementById('menu-sound-text').textContent = soundEnabled ? 'SOUND ON' : 'SOUND OFF';
+
+            document.getElementById('pause-sound-icon').className = soundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+            document.getElementById('pause-sound-text').textContent = labelText;
+        }
+
+        document.getElementById('menu-play-btn').onclick = () => {
+            sfx.playClick();
+            if (soundEnabled) sfx.startBgMusic();
+            mainMenu.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            initBoard();
+        };
+
+        // Pause Button opens Pause Overlay Modal
+        document.getElementById('pause-btn').onclick = () => {
+            sfx.playClick();
+            document.getElementById('pause-modal').classList.remove('opacity-0', 'pointer-events-none');
+        };
+
+        document.getElementById('pause-resume-btn').onclick = () => {
+            sfx.playClick();
+            document.getElementById('pause-modal').classList.add('opacity-0', 'pointer-events-none');
+        };
+
+        document.getElementById('pause-restart-btn').onclick = () => {
+            sfx.playClick();
+            document.getElementById('pause-modal').classList.add('opacity-0', 'pointer-events-none');
+            initBoard();
+        };
+
+        document.getElementById('pause-audio-btn').onclick = () => {
+            sfx.toggleAudio();
+            sfx.playClick();
+            syncAudioUI();
+        };
+
+        document.getElementById('pause-quit-btn').onclick = () => {
+            sfx.playClick();
+            document.getElementById('pause-modal').classList.add('opacity-0', 'pointer-events-none');
+            gameScreen.classList.add('hidden');
+            mainMenu.classList.remove('hidden');
+        };
+
+        document.getElementById('restart-game-btn').onclick = () => {
+            sfx.playClick();
+            initBoard();
+        };
+
+        document.getElementById('menu-tutorial-btn').onclick = () => {
+            sfx.playClick();
+            document.getElementById('tutorial-modal').classList.remove('opacity-0', 'pointer-events-none');
+        };
+
+        document.getElementById('close-tutorial-btn').onclick = () => {
+            sfx.playClick();
+            document.getElementById('tutorial-modal').classList.add('opacity-0', 'pointer-events-none');
+        };
+
+        document.getElementById('menu-theme-btn').onclick = () => {
+            sfx.playClick();
+            document.getElementById('theme-modal').classList.remove('opacity-0', 'pointer-events-none');
+        };
+
+        document.getElementById('close-theme-btn').onclick = () => {
+            sfx.playClick();
+            document.getElementById('theme-modal').classList.add('opacity-0', 'pointer-events-none');
+        };
+
+        document.getElementById('menu-sound-btn').onclick = () => {
+            sfx.toggleAudio();
+            sfx.playClick();
+            syncAudioUI();
+        };
+
+        document.getElementById('modal-restart-btn').onclick = () => {
+            document.getElementById('game-over-modal').classList.add('opacity-0', 'pointer-events-none');
+            initBoard();
+        };
+
+        document.getElementById('modal-menu-btn').onclick = () => {
+            document.getElementById('game-over-modal').classList.add('opacity-0', 'pointer-events-none');
+            gameScreen.classList.add('hidden');
+            mainMenu.classList.remove('hidden');
+        };
+
+        // Sync high score on menu boot
+        menuHighScoreEl.textContent = highScore;
+        syncAudioUI();
+    </script>
 </body>
 </html>
